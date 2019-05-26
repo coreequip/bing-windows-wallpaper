@@ -24,8 +24,11 @@ $destPath = $targetPath = Join-Path -Path ([environment]::getfolderpath('mypictu
 if (-not (Test-Path $destPath -PathType Container)) {
     New-Item $destPath -ItemType Directory | Out-Null
 }
-$filename = Join-Path $destPath (New-Object System.Uri $url).Segments[-1]
 
+$url_filename = (New-Object System.Uri $url).Query.Substring(1).Split("=")[1]
+
+$filename = Join-Path $destPath $url_filename 
+Write-Host $filename
 if (Test-Path $filename -PathType Leaf) {
     Write-Host "`n Already downloaded, exiting."
     exit 1
