@@ -18,13 +18,15 @@ $wc.Encoding = [Text.Encoding]::UTF8
 $json = ConvertFrom-Json ($wc.DownloadString('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1'))
 $url = 'http://www.bing.com{0}_1920x1080.jpg' -f $json.images.urlbase
 
-Write-Host ("`n Image copyright: {0}`n URL: {1}" -f $json.images.copyright, $url)
+Write-Host ("`n {0}`n`n URL: {1}" -f $json.images.copyright, $url)
 
 $destPath = $targetPath = Join-Path -Path ([environment]::getfolderpath('mypictures')) -ChildPath 'BingWallpaper'
 if (-not (Test-Path $destPath -PathType Container)) {
     New-Item $destPath -ItemType Directory | Out-Null
 }
-$filename = Join-Path $destPath (New-Object System.Uri $url).Segments[-1]
+if (-not ($url -match '/th\?id=OHR.(.*)$')) { exit 1 }
+
+$filename = Join-Path $destPath $Matches[1]
 
 if (Test-Path $filename -PathType Leaf) {
     Write-Host "`n Already downloaded, exiting."
